@@ -3561,45 +3561,7 @@ export default function Home() {
                   referrerPolicy="no-referrer-when-downgrade"
                 />
                 <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_44%_50%,rgba(217,154,0,0.12)_0%,rgba(217,154,0,0)_20%)]" />
-                <div className="absolute left-5 top-5 flex w-[360px] max-w-[calc(100%-40px)] items-center gap-4 rounded-[16px] bg-white/96 p-3 text-left shadow-[0_16px_32px_rgba(23,59,108,0.18)] backdrop-blur-sm">
-                  <div className="relative h-[92px] w-[118px] shrink-0 overflow-hidden rounded-[12px]">
-                    <Image
-                      src={branchLocations[0].image}
-                      alt={branchLocations[0].name}
-                      fill
-                      sizes="118px"
-                      className="object-cover"
-                    />
-                    <span className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-[#D99A00] text-white shadow-[0_8px_14px_rgba(217,154,0,0.28)]">
-                      <BranchNetworkIcon icon="tower" className="h-4 w-4" />
-                    </span>
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <h3 className="max-w-[190px] text-[15px] font-extrabold leading-snug text-[#173B6C]">
-                      Ameerpet Branch
-                    </h3>
-                    <p className="mt-2 max-w-[190px] text-[12px] font-medium leading-5 text-[#173B6C]/70">
-                      Ameerpet, Hyderabad, Telangana, India
-                    </p>
-                    <span className="mt-3 inline-flex items-center gap-2 whitespace-nowrap rounded-full bg-[#E9EFF9] px-3 py-1.5 text-[12px] font-extrabold text-[#003A8C]">
-                      View Details
-                      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-4 w-4">
-                        <path d="M5 12h12m-5-5 5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    </span>
-                  </div>
-                </div>
-                {branchLocations.slice(0, 5).map((branch, index) => (
-                  <span
-                    key={branch.name}
-                    className={`absolute hidden -translate-x-1/2 -translate-y-1/2 drop-shadow-[0_10px_16px_rgba(23,59,108,0.25)] md:block ${index === 0 ? "scale-125" : ""}`}
-                    style={{ top: branch.top, left: branch.left }}
-                  >
-                    <span className={`flex h-10 w-10 items-center justify-center rounded-full border-[3px] border-white ${index === 0 ? "bg-[#D99A00]" : "bg-[#003A8C]"} text-white shadow-[0_0_0_8px_rgba(255,255,255,0.32)]`}>
-                      <BranchNetworkIcon icon="tower" className="h-5 w-5" />
-                    </span>
-                  </span>
-                ))}
+\
                 <button
                   type="button"
                   className="absolute bottom-6 left-5 inline-flex h-11 items-center gap-2 rounded-[12px] bg-white px-4 text-[13px] font-extrabold text-[#003A8C] shadow-[0_12px_24px_rgba(23,59,108,0.16)]"
@@ -3670,9 +3632,6 @@ export default function Home() {
                           sizes="82px"
                           className="object-cover transition-transform duration-500 group-hover:scale-105"
                         />
-                        <span className="absolute -bottom-1 -right-1 flex h-9 w-9 items-center justify-center rounded-full border-[3px] border-white bg-[#003A8C] text-white">
-                          <BranchNetworkIcon icon="tower" className="h-4 w-4" />
-                        </span>
                       </div>
                       <div className="min-w-0 flex-1">
                         <h3 className="text-[15px] font-extrabold leading-snug text-[#173B6C]">
@@ -3936,7 +3895,7 @@ export default function Home() {
                 <feColorMatrix
                   in="goldBlur"
                   type="matrix"
-                  values="1 0 0 0 0.95 0 1 0 0 0.68 0 0 1 0 0.2 0 0 0 0.72 0"
+                  values="1 0 0 0 0.62 0 1 0 0 0.76 0 0 1 0 0.39 0 0 0 0.72 0"
                 />
                 <feMerge>
                   <feMergeNode />
@@ -3971,7 +3930,7 @@ export default function Home() {
               className="footer-wave-gold"
               fill="none"
               filter="url(#footerGoldGlow)"
-              stroke="#4F4CB0"
+              stroke="#9FC164"
               strokeLinecap="round"
               strokeWidth="8"
             />

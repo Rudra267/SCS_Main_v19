@@ -627,7 +627,7 @@ body {
 
 .footer-wave-shimmer {
   filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.54))
-    drop-shadow(0 0 14px rgba(79, 76, 176, 0.3));
+    drop-shadow(0 0 14px rgba(159, 193, 100, 0.34));
   opacity: 0.86;
 }
 
