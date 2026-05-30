@@ -1,6 +1,6 @@
 "use client";
 
-import { type CSSProperties, type ReactNode, useCallback, useEffect, useRef, useState } from "react";
+import { type CSSProperties, type ReactNode, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { LegacyStatsSection } from "@/components/LegacyStatsSection";
@@ -1102,6 +1102,7 @@ const CampusMomentIcon = ({ icon }: { icon: string }) => {
 };
 
 export default function Home() {
+  const studentStoriesSectionRef = useRef<HTMLElement | null>(null);
   const storyCarouselRef = useRef<HTMLDivElement | null>(null);
   const featuredCitiesSectionRef = useRef<HTMLDivElement | null>(null);
   const campusGalleryRef = useRef<HTMLDivElement | null>(null);
@@ -1178,21 +1179,29 @@ export default function Home() {
     }, delay);
   };
 
-  const cycleStudentStories = useCallback((step: number) => {
+  const cycleStudentStories = (step: number) => {
     const maxStartIndex = Math.max(studentStories.length - storyCardsPerView, 0);
+    const nextIndex =
+      activeStoryIndex + step > maxStartIndex
+        ? 0
+        : activeStoryIndex + step < 0
+          ? maxStartIndex
+          : activeStoryIndex + step;
 
-    setActiveStoryIndex((prev) => {
-      if (prev + step > maxStartIndex) {
-        return 0;
-      }
+    setActiveStoryIndex(nextIndex);
 
-      if (prev + step < 0) {
-        return maxStartIndex;
-      }
+    const section = studentStoriesSectionRef.current;
 
-      return prev + step;
-    });
-  }, [setActiveStoryIndex, storyCardsPerView]);
+    if (section && window.innerWidth >= 1024) {
+      const scrollableDistance = Math.max(section.offsetHeight - window.innerHeight, 1);
+      const progress = maxStartIndex > 0 ? nextIndex / maxStartIndex : 0;
+
+      window.scrollTo({
+        top: section.offsetTop + scrollableDistance * progress,
+        behavior: "smooth",
+      });
+    }
+  };
 
   const handleOpenAdmissionModal = (cityName: string) => {
     const cityBranches = admissionBranchesByCity[cityName] ?? [];
@@ -1338,14 +1347,6 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    const intervalId = window.setInterval(() => {
-      cycleStudentStories(1);
-    }, 3600);
-
-    return () => window.clearInterval(intervalId);
-  }, [cycleStudentStories]);
-
-  useEffect(() => {
     const maxStartIndex = Math.max(studentStories.length - storyCardsPerView, 0);
 
     const frameId = window.requestAnimationFrame(() => {
@@ -1362,6 +1363,10 @@ export default function Home() {
       return;
     }
 
+    if (window.innerWidth >= 1024) {
+      return;
+    }
+
     const targetCard = carousel.children.item(activeStoryIndex) as HTMLElement | null;
 
     if (!targetCard) {
@@ -1373,6 +1378,77 @@ export default function Home() {
       behavior: "smooth",
     });
   }, [activeStoryIndex]);
+
+  useEffect(() => {
+    const section = studentStoriesSectionRef.current;
+    const track = storyCarouselRef.current;
+
+    if (!section || !track) {
+      return;
+    }
+
+    let frameId = 0;
+
+    const syncPinnedStories = () => {
+      frameId = 0;
+
+      if (window.innerWidth < 1024) {
+        track.style.transform = "";
+        section.style.removeProperty("--student-stories-scroll-height");
+        return;
+      }
+
+      const viewport = track.parentElement;
+
+      if (!viewport) {
+        return;
+      }
+
+      const maxTranslate = Math.max(track.scrollWidth - viewport.clientWidth, 0);
+      const scrollHeight = Math.max(
+        window.innerHeight + maxTranslate + 180,
+        window.innerHeight * 1.6,
+      );
+
+      section.style.setProperty("--student-stories-scroll-height", `${scrollHeight}px`);
+
+      const scrollableDistance = Math.max(section.offsetHeight - window.innerHeight, 1);
+      const rawProgress = (window.scrollY - section.offsetTop) / scrollableDistance;
+      const progress = Math.min(Math.max(rawProgress, 0), 1);
+
+      track.style.transform = `translate3d(${-maxTranslate * progress}px, 0, 0)`;
+
+      const maxStartIndex = Math.max(studentStories.length - storyCardsPerView, 0);
+      const nextActiveIndex = Math.round(progress * maxStartIndex);
+
+      setActiveStoryIndex((prev) =>
+        prev === nextActiveIndex ? prev : nextActiveIndex,
+      );
+    };
+
+    const requestSync = () => {
+      if (frameId) {
+        return;
+      }
+
+      frameId = window.requestAnimationFrame(syncPinnedStories);
+    };
+
+    requestSync();
+    window.addEventListener("scroll", requestSync, { passive: true });
+    window.addEventListener("resize", requestSync);
+
+    return () => {
+      if (frameId) {
+        window.cancelAnimationFrame(frameId);
+      }
+
+      window.removeEventListener("scroll", requestSync);
+      window.removeEventListener("resize", requestSync);
+      track.style.transform = "";
+      section.style.removeProperty("--student-stories-scroll-height");
+    };
+  }, [storyCardsPerView]);
 
   useEffect(() => {
     const gallery = campusGalleryRef.current;
@@ -1652,12 +1728,35 @@ export default function Home() {
         />
         <div className="relative z-10 mx-auto w-full max-w-[1510px] px-2 sm:px-2.5 lg:px-3">
           <div
-            className={`flex items-center justify-between gap-4 rounded-[18px] border border-[#E9EFF9]/55 bg-[#E9EFF9]/72 px-3 py-3 shadow-[0_14px_34px_rgba(23,59,108,0.12)] backdrop-blur-xl transition-[transform,opacity] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] min-[1317px]:mt-4 min-[1317px]:grid min-[1317px]:grid-cols-[240px_minmax(0,1fr)] min-[1317px]:items-center min-[1317px]:gap-0 min-[1317px]:rounded-[24px] min-[1317px]:border min-[1317px]:border-[#E9EFF9]/70 min-[1317px]:bg-[#E9EFF9]/92 min-[1317px]:px-5 min-[1317px]:py-3 min-[1317px]:shadow-[0_18px_48px_rgba(23,59,108,0.14)] min-[1317px]:backdrop-blur-xl ${headerEnterClass}`}
+            className={`relative overflow-hidden flex items-center justify-between gap-4 rounded-[18px] border border-[#D6E8C8]/70 bg-white/90 px-3 py-3 shadow-[0_14px_34px_rgba(23,59,108,0.10)] backdrop-blur-xl transition-[transform,opacity] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] before:absolute before:inset-x-0 before:top-0 before:h-[3px] before:bg-[#9FC164] min-[1317px]:mt-4 min-[1317px]:grid min-[1317px]:grid-cols-[240px_minmax(0,1fr)] min-[1317px]:items-center min-[1317px]:gap-0 min-[1317px]:rounded-[24px] min-[1317px]:border min-[1317px]:border-[#D6E8C8]/80 min-[1317px]:bg-white/92 min-[1317px]:px-5 min-[1317px]:py-3 min-[1317px]:shadow-[0_18px_48px_rgba(23,59,108,0.12)] min-[1317px]:backdrop-blur-xl ${headerEnterClass}`}
             style={{
               animation:
                 "navDropIn 880ms cubic-bezier(0.22,1,0.36,1) 100ms both",
             }}
           >
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute bottom-0 right-0 top-0 hidden w-[360px] bg-[#DCEBCF]/72 min-[1317px]:block"
+              style={{ clipPath: "polygon(30% 0, 100% 0, 100% 100%, 0 100%)" }}
+            />
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 150 92"
+              className="pointer-events-none absolute bottom-[-10px] right-[206px] hidden h-[74px] w-[120px] text-[#9FC164]/34 min-[1317px]:block"
+              fill="none"
+            >
+              <path
+                d="M16 76C40 40 79 21 133 14C100 49 65 70 16 76Z"
+                stroke="currentColor"
+                strokeWidth="2"
+              />
+              <path
+                d="M18 75C56 62 92 39 131 15M47 64 38 43M65 54 56 31M82 43 75 24M101 31 94 19"
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeWidth="1.5"
+              />
+            </svg>
             <Link
               href="/"
               className="relative z-10 shrink-0 transition-[transform,opacity] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] min-[1317px]:pl-2"
@@ -1694,7 +1793,7 @@ export default function Home() {
               aria-label="Open navigation menu"
               aria-expanded={isMenuOpen}
               onClick={() => setIsMenuOpen(true)}
-              className={`inline-flex h-12 w-12 items-center justify-center rounded-full border shadow-[0_6px_18px_rgba(23,59,108,0.10)] transition-all min-[1317px]:hidden ${
+              className={`relative z-10 inline-flex h-12 w-12 items-center justify-center rounded-full border shadow-[0_6px_18px_rgba(23,59,108,0.10)] transition-all min-[1317px]:hidden ${
                 headerIsSolid
                   ? "border-[#4F4CB0] bg-[#E9EFF9] text-[#4F4CB0] hover:border-[#4F4CB0] hover:bg-[#E9EFF9]"
                   : "border-[#E9EFF9]/35 bg-[#E9EFF9]/10 text-[#E9EFF9] backdrop-blur-md hover:border-[#E9EFF9]/60 hover:bg-[#E9EFF9]/16"
@@ -1707,11 +1806,11 @@ export default function Home() {
               </span>
             </button>
 
-            <div className="hidden min-w-0 flex-1 flex-col items-end min-[1317px]:flex">
+            <div className="relative z-10 hidden min-w-0 flex-1 flex-col items-end min-[1317px]:flex">
               <div className="flex w-full items-center justify-end gap-2">
                 <nav
                   aria-label="Primary"
-                  className="flex items-center justify-end"
+                  className="flex items-center justify-end gap-1"
                 >
                   {navLinks.map((item, index) => (
                     <div
@@ -1720,7 +1819,7 @@ export default function Home() {
                     >
                       <Link
                         href={item.href}
-                        className={`px-[10px] text-[15px] font-medium leading-none tracking-[-0.01em] transition-colors duration-300 hover:text-[#4F4CB0] ${headerTextClass}`}
+                        className={`px-[10px] text-[15px] font-semibold leading-none tracking-[-0.01em] transition-colors duration-300 hover:text-[#214F3B] ${headerTextClass}`}
                       >
                         {item.label}
                       </Link>
@@ -1742,19 +1841,37 @@ export default function Home() {
                       {index < navLinks.length - 1 ? (
                         <span
                           aria-hidden="true"
-                          className="px-[4px] text-[15px] font-normal leading-none text-[#4F4CB0]"
-                        >
-                          |
-                        </span>
+                          className="mx-[7px] h-[4px] w-[4px] rounded-full bg-[#9FC164]/70"
+                        />
                       ) : null}
                     </div>
                   ))}
                 </nav>
                 <Link
                   href="/"
-                  className="group relative !text-white z-10 ml-[10px] inline-flex min-h-[46px] min-w-[186px] items-center justify-center overflow-hidden rounded-full bg-[#4F4CB0] px-6 py-3 text-[13px] font-extrabold uppercase leading-none tracking-[0.04em] shadow-[0_14px_28px_rgba(79,76,176,0.30)] transition-all duration-400 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:!text-white hover:shadow-[0_18px_34px_rgba(79,76,176,0.38)]"
+                  aria-label="Search"
+                  className="ml-[14px] inline-flex h-[48px] w-[48px] items-center justify-center rounded-full border border-[#8EA995]/70 bg-white/82 text-[#12372B] shadow-[0_10px_22px_rgba(23,59,108,0.08)] transition-all duration-300 hover:-translate-y-0.5 hover:border-[#214F3B] hover:text-[#214F3B]"
                 >
-                  <span className="absolute inset-0 bg-[linear-gradient(135deg,#4F4CB0_0%,#4F4CB0_52%,#9FC164_100%)] opacity-0 transition-opacity duration-400 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:opacity-100" />
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    className="h-5 w-5"
+                  >
+                    <path
+                      d="m20 20-4.2-4.2M10.8 18a7.2 7.2 0 1 1 0-14.4 7.2 7.2 0 0 1 0 14.4Z"
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2.2"
+                    />
+                  </svg>
+                </Link>
+                <Link
+                  href="/"
+                  className="group relative !text-white z-10 ml-[8px] inline-flex min-h-[48px] min-w-[170px] items-center justify-center overflow-hidden rounded-full bg-[#214F3B] px-6 py-3 text-[13px] font-extrabold uppercase leading-none tracking-[0.04em] shadow-[0_14px_28px_rgba(33,79,59,0.26)] transition-all duration-400 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:!text-white hover:shadow-[0_18px_34px_rgba(33,79,59,0.32)]"
+                >
+                  <span className="absolute inset-0 bg-[linear-gradient(135deg,#214F3B_0%,#173B2D_62%,#9FC164_100%)] opacity-0 transition-opacity duration-400 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:opacity-100" />
                   <span className="absolute inset-x-5 top-[7px] h-[1px] bg-[#E9EFF9]/60 opacity-70 transition-opacity duration-400 group-hover:opacity-100" />
                   <span className="absolute -left-[38%] top-[-15%] h-[130%] w-[22%] rotate-[18deg] bg-[linear-gradient(90deg,rgba(233,239,249,0)_0%,rgba(233,239,249,0.18)_22%,rgba(233,239,249,0.72)_50%,rgba(233,239,249,0.18)_78%,rgba(233,239,249,0)_100%)] opacity-0 blur-[1px] transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:left-[118%] group-hover:opacity-100" />
                   <span className="relative z-10 inline-flex items-center gap-4">
@@ -2741,7 +2858,10 @@ export default function Home() {
         </div>
       ) : null}
 
-      <section className="relative isolate overflow-hidden bg-[#ffffff] px-4 py-14 text-[#101A5D] sm:px-6 sm:py-18 lg:px-8 lg:py-20">
+      <section
+        ref={studentStoriesSectionRef}
+        className="relative isolate bg-[#ffffff] px-4 py-14 text-[#101A5D] sm:px-6 sm:py-18 lg:h-[var(--student-stories-scroll-height,220vh)] lg:px-8 lg:py-0"
+      >
         <div
           aria-hidden="true"
           data-section-reveal
@@ -2821,7 +2941,7 @@ export default function Home() {
           }}
         />
 
-        <div className="relative z-10 mx-auto w-full max-w-[1510px]">
+        <div className="relative z-10 mx-auto w-full max-w-[1510px] lg:sticky lg:top-[88px] lg:flex lg:min-h-[calc(100vh-88px)] lg:flex-col lg:justify-center lg:py-10">
           <div className="max-w-[900px]">
             <p
               data-section-reveal
@@ -2857,7 +2977,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="relative mt-8 lg:mt-9">
+          <div className="relative mt-8 overflow-hidden lg:mt-9">
             <button
               type="button"
               onClick={() => cycleStudentStories(-1)}
@@ -2904,7 +3024,7 @@ export default function Home() {
 
             <div
               ref={storyCarouselRef}
-              className="flex snap-x snap-mandatory gap-5 overflow-hidden scroll-smooth xl:gap-7"
+              className="flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth will-change-transform [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:overflow-visible lg:scroll-auto xl:gap-7"
             >
               {studentStories.map((story, index) => (
                 <article
