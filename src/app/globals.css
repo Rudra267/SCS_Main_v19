@@ -53,7 +53,7 @@ body {
 
 .section-decor {
   --decor-blob-delay: 900ms;
-  --decor-blob-duration: 10s;
+  --decor-blob-duration: 14s;
   --decor-blob-x: 16px;
   --decor-blob-y: 14px;
   --decor-final-transform: translate3d(0, 0, 0) rotate(0deg);
@@ -61,31 +61,34 @@ body {
   filter: blur(14px) saturate(1.08);
   opacity: 0;
   pointer-events: none;
+  transform-origin: 50% 50%;
   transform: translate3d(var(--decor-x, 0), var(--decor-y, 18px), 0)
     rotate(var(--decor-start-rotate, 0deg)) scale(0.96);
   transition:
     opacity 900ms cubic-bezier(0.16, 1, 0.3, 1),
     transform 1100ms cubic-bezier(0.16, 1, 0.3, 1),
     filter 1100ms cubic-bezier(0.16, 1, 0.3, 1);
+  backface-visibility: hidden;
   will-change: opacity, transform, filter;
 }
 
 .section-decor.is-visible {
-  animation: sectionBlobDrift var(--decor-blob-duration) ease-in-out
+  animation: sectionBlobDrift var(--decor-blob-duration)
+    cubic-bezier(0.45, 0, 0.2, 1)
     var(--decor-blob-delay) infinite alternate;
-  filter: blur(18px) saturate(1.12);
+  filter: blur(18px) saturate(1.1);
   opacity: var(--decor-opacity);
   transform: var(--decor-final-transform)
     translate3d(var(--decor-drift-x, 0px), var(--decor-drift-y, 0px), 0);
 }
 
 .legacy-motion-blob {
-  --decor-blob-duration: 9s;
+  --decor-blob-duration: 13s;
 }
 
 .legacy-motion-blob-b {
   --decor-blob-delay: 1300ms;
-  --decor-blob-duration: 11s;
+  --decor-blob-duration: 15s;
 }
 
 .decor-leaf {
@@ -206,63 +209,89 @@ body {
 
 @keyframes sectionBlobDrift {
   0% {
-    filter: blur(16px) saturate(1.04);
+    filter: blur(17px) saturate(1.04);
     transform: var(--decor-final-transform)
       translate3d(var(--decor-drift-x, 0px), var(--decor-drift-y, 0px), 0)
-      scale(1);
+      scale3d(1, 1, 1);
   }
 
-  50% {
-    filter: blur(22px) saturate(1.16);
+  32% {
+    filter: blur(20px) saturate(1.1);
     transform: var(--decor-final-transform)
       translate3d(
-        calc(var(--decor-drift-x, 0px) + var(--decor-blob-x)),
+        calc(var(--decor-drift-x, 0px) + (var(--decor-blob-x) * 0.62)),
+        calc(var(--decor-drift-y, 0px) + (var(--decor-blob-y) * 0.42)),
+        0
+      )
+      scale3d(1.045, 0.97, 1);
+  }
+
+  64% {
+    filter: blur(22px) saturate(1.14);
+    transform: var(--decor-final-transform)
+      translate3d(
+        calc(var(--decor-drift-x, 0px) - (var(--decor-blob-x) * 0.28)),
         calc(var(--decor-drift-y, 0px) + var(--decor-blob-y)),
         0
       )
-      scale(1.035);
+      scale3d(0.975, 1.04, 1);
   }
 
   100% {
-    filter: blur(18px) saturate(1.1);
+    filter: blur(18px) saturate(1.08);
     transform: var(--decor-final-transform)
       translate3d(
-        calc(var(--decor-drift-x, 0px) - var(--decor-blob-x)),
-        calc(var(--decor-drift-y, 0px) + var(--decor-blob-y)),
+        calc(var(--decor-drift-x, 0px) - (var(--decor-blob-x) * 0.78)),
+        calc(var(--decor-drift-y, 0px) + (var(--decor-blob-y) * 0.7)),
         0
       )
-      scale(0.985);
+      scale3d(1.015, 0.992, 1);
   }
 }
 
 @keyframes legacyBlobDrift {
   0% {
-    filter: blur(16px) saturate(1.04);
+    filter: blur(17px) saturate(1.04);
     transform: var(--legacy-blob-transform)
       translate3d(
         calc(var(--legacy-blob-x) * -0.45),
         calc(var(--legacy-blob-y) * -0.35),
         0
       )
-      scale(1);
+      scale3d(1, 1, 1);
   }
 
-  50% {
-    filter: blur(22px) saturate(1.16);
+  35% {
+    filter: blur(20px) saturate(1.1);
     transform: var(--legacy-blob-transform)
-      translate3d(var(--legacy-blob-x), var(--legacy-blob-y), 0)
-      scale(1.035);
+      translate3d(
+        calc(var(--legacy-blob-x) * 0.72),
+        calc(var(--legacy-blob-y) * 0.45),
+        0
+      )
+      scale3d(1.042, 0.972, 1);
+  }
+
+  68% {
+    filter: blur(22px) saturate(1.14);
+    transform: var(--legacy-blob-transform)
+      translate3d(
+        calc(var(--legacy-blob-x) * 0.14),
+        var(--legacy-blob-y),
+        0
+      )
+      scale3d(0.976, 1.038, 1);
   }
 
   100% {
-    filter: blur(18px) saturate(1.1);
+    filter: blur(18px) saturate(1.08);
     transform: var(--legacy-blob-transform)
       translate3d(
         calc(var(--legacy-blob-x) * -0.2),
         calc(var(--legacy-blob-y) * 0.65),
         0
       )
-      scale(0.985);
+      scale3d(1.014, 0.992, 1);
   }
 }
 

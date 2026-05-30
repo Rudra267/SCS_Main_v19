@@ -129,6 +129,8 @@ export function LegacyStatsSection() {
             "--decor-x": "-22px",
             "--decor-y": "30px",
             "--decor-opacity": "0.86",
+            background:
+              "linear-gradient(135deg, rgba(159, 193, 100, 0.78), rgba(234, 255, 198, 0.86))",
           } as CSSProperties
         }
       />

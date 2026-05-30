@@ -2073,10 +2073,10 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="bg-[#E9EFF9] pb-3 sm:pb-4 lg:pb-5">
-        <div className="px-3 pt-8 sm:px-5 sm:pt-10 lg:px-8 lg:pt-12">
+      <section className="bg-white pb-0">
+        <div className="px-3 pb-0 pt-8 sm:px-5 sm:pb-0 sm:pt-10 lg:px-8 lg:pb-0 lg:pt-12">
           <div className="mx-auto w-full max-w-[1320px]">
-            <div className="relative overflow-hidden rounded-[24px] bg-transparent px-4 pb-7 pt-4 sm:rounded-[26px] sm:px-5 sm:pb-8 sm:pt-5">
+            <div className="relative overflow-hidden rounded-[24px] bg-transparent px-4 pb-0 pt-4 sm:rounded-[26px] sm:px-5 sm:pb-0 sm:pt-5">
 
               <div className="relative aspect-[1920/500] overflow-hidden rounded-[18px] bg-transparent shadow-[0_18px_44px_rgba(23,59,108,0.14)] sm:rounded-[20px]">
                 <div
@@ -2119,7 +2119,7 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="relative mt-4 flex items-center justify-center gap-3">
+              <div className="absolute inset-x-0 bottom-3 z-10 flex items-center justify-center gap-3">
                 {admissionsBannerSlides.map((slide, index) => (
                   <button
                     key={slide.src}
@@ -2141,7 +2141,7 @@ export default function Home() {
 
       <LegacyStatsSection />
 
-      <section className="relative isolate overflow-hidden bg-[radial-gradient(circle_at_50%_0%,#FFFFFF_0%,#FFFFFF_48%,rgba(216,197,150,0.36)_100%)] px-2 pb-24 pt-8 sm:px-2.5 sm:pb-24 sm:pt-12 lg:px-3 lg:pb-28 lg:pt-14">
+      <section className="relative isolate overflow-hidden bg-[radial-gradient(circle_at_50%_0,#fff_0%_48%,#eaffc4_100%)] px-2 pb-24 pt-8 sm:px-2.5 sm:pb-24 sm:pt-12 lg:px-3 lg:pb-28 lg:pt-14">
         <div className="relative mx-auto w-full max-w-[1510px]">
           <div
             data-section-reveal
@@ -3118,8 +3118,8 @@ export default function Home() {
               style={{ fontFamily: "var(--font-poppins), Poppins, sans-serif" }}
               className="legacy-heading-wave wave-reveal-heading mt-5 text-[34px] font-extrabold leading-[1.08] tracking-[0] text-[#101A5D] sm:text-[48px] lg:text-[57px]"
             >
-              <span>A Glimpse Into{" "}</span>
-              <span className="font-extrabold text-[#D99A00]" style={{margin:"0 0 0 7px"}}>
+              <span className="text-[#4F4CB0]">A Glimpse Into{" "}</span>
+              <span className="font-extrabold text-[#101A5D]" style={{margin:"0 0 0 7px"}}>
                 Campus{" "}
                 <span className="relative inline-block">
                   Life
@@ -3587,7 +3587,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="relative isolate overflow-hidden bg-[linear-gradient(135deg,#ffc32d_0%,#ffffff_100%)] px-4 py-14 sm:px-6 sm:py-18 lg:px-8 lg:py-20">
+      <section className="relative isolate overflow-hidden bg-[linear-gradient(135deg,#eaffc6_0%,#fff_100%)] px-4 py-14 sm:px-6 sm:py-18 lg:px-8 lg:py-20">
         <div
           aria-hidden="true"
           data-section-reveal
